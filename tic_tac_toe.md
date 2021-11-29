@@ -61,11 +61,11 @@ A player represents a player spot ('X'), computer spot ('O'), or empty position 
 ## A Position is a 2-element Array of the form [row, column]
 - `row` and `col` are integers in the range [0, 2], representing their index in the nested board array
 
-## A Status is one of:
-- 0 (game is unfinished)
-- 1 (user win)
-- 2 (computer win)
-- 3 (tie)
+## A Result is one of:
+- nil (game is unfinished)
+- 'X' (user win)
+- 'O' (computer win)
+- 'tie' (tie)
 
 # ALGORITHM
 
