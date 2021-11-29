@@ -129,6 +129,7 @@ Outer-level algorithm:
   ```
   - I assume that using || is an appropriate simplifcation.
 - Is it acceptable to rely on non-Boolean return values from a method to determine truthiness, or should is it better to only utilize the truthiness of methods that return a Boolean explicitly? For example, my `computer_move!` method relies on the truthiness of `winning_square`, which returns either a square (truthy) or `nil` (falsey).
+- In order to experiment with board updates (without actually performing them), I went the route of making board copies (deep to the row level) via a helper method `copy_board`. Instead of needing to copy the board, I could've re-written methods that perform board updates to be nondestructive, and actually return a new, updated instance of the board. Would the latter (a more functional-programming style) be preferable?
 
 ## Improvements
 

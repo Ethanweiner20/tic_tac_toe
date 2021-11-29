@@ -50,6 +50,12 @@ MIDDLE_SQUARE = 5
 MAX_WINS = 5
 BOARD_SIZE = 3
 
+FIRST_PLAYER_OPTIONS = {
+  1 => "You (the user)",
+  2 => "The computer",
+  3 => "Let the computer choose"
+}
+
 MESSAGES = {
   welcome: "Welcome to Tic Tac Toe!\n"\
   "- You're #{USER}. Computer is #{COMPUTER}.\n"\
@@ -57,9 +63,9 @@ MESSAGES = {
   goodbye: "Thanks for playing Tic Tac Toe! Goodbye!",
   continue: "Press any key to continue.",
   pick_first_player: "Who should go first (1, 2, or 3)?\n"\
-  "1. You (the user)\n"\
-  "2. The computer\n"\
-  "3. Let the computer choose\n",
+  "1. #{FIRST_PLAYER_OPTIONS[1]}\n"\
+  "2. #{FIRST_PLAYER_OPTIONS[2]}\n"\
+  "3. #{FIRST_PLAYER_OPTIONS[3]}\n",
   board_size: "Please enter a board size between 2 and 10.",
   again: "Would you like to play again (y/n)?",
   invalid_choice: "Your input is invalid. Please try again."
@@ -205,8 +211,9 @@ def update_board!(board, player, square)
 end
 
 def result(board)
-  if winner(board) == USER then USER
-  elsif winner(board) == COMPUTER then COMPUTER
+  winner = winner(board)
+  if winner == USER then USER
+  elsif winner == COMPUTER then COMPUTER
   elsif full?(board) then 'tie'
   end
 end
