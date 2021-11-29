@@ -42,6 +42,12 @@ BOARD_ROW_WIN = [
   ['O', '_', '_']
 ]
 
+BOARD_ROW_LOSS = [
+  ['O', 'O', 'O'],
+  ['_', 'X', 'X'],
+  ['O', 'X', '_']
+]
+
 BOARD_COL_WIN = [
   ['X', 'O', 'X'],
   ['O', 'O', 'X'],

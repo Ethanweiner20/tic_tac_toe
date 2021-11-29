@@ -128,7 +128,6 @@ def score_message(score)
 end
 
 def display_winner(score)
-  system('clear')
   prompt "#{score[:user] == MAX_WINS ? 'You' : 'The computer'} won the game! "\
          "The final score was #{score[:user]}-#{score[:computer]}."
 end
@@ -275,7 +274,7 @@ end
 def play_again?
   prompt MESSAGES[:again]
   answer = gets.chomp.downcase
-  answer == 'y' || answer == 'yes'
+  !!(answer == 'y' || answer == 'yes')
 end
 
 # Auxiliary Methods
@@ -313,6 +312,10 @@ def alternate_player(player)
   player == USER ? COMPUTER : USER
 end
 
+def end_game?(score)
+  !!(score[:user] == MAX_WINS || score[:computer] == MAX_WINS)
+end
+
 # MAIN PROGRAM
 # ============================================================================
 
@@ -341,7 +344,7 @@ loop do
     update_score!(result, score)
     display_result(result, score)
 
-    break if score[:user] == MAX_WINS || score[:computer] == MAX_WINS
+    break if end_game?(score)
   end
 
   display_winner(score)

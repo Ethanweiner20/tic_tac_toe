@@ -1,8 +1,6 @@
 # Tic Tac Toe
 # ============================================================================
 
-require 'pry-byebug'
-
 # DATA DEFINITIONS
 # ============================================================================
 
@@ -136,7 +134,6 @@ def score_message(score)
 end
 
 def display_winner(score)
-  system('clear')
   prompt "#{score[:user] == MAX_WINS ? 'You' : 'The computer'} won the game! "\
          "The final score was #{score[:user]}-#{score[:computer]}."
 end
@@ -303,7 +300,7 @@ end
 def play_again?
   prompt MESSAGES[:again]
   answer = gets.chomp.downcase
-  answer == 'y' || answer == 'yes'
+  !!(answer == 'y' || answer == 'yes')
 end
 
 # Auxiliary Methods
@@ -341,6 +338,10 @@ def alternate_player(player)
   player == USER ? COMPUTER : USER
 end
 
+def end_game?(score)
+  !!(score[:user] == MAX_WINS || score[:computer] == MAX_WINS)
+end
+
 # MAIN PROGRAM
 # ============================================================================
 
@@ -370,7 +371,7 @@ loop do
     display_turn(board)
     display_result(result, score)
 
-    break if score[:user] == MAX_WINS || score[:computer] == MAX_WINS
+    break if end_game?(score)
   end
 
   display_winner(score)
@@ -379,19 +380,3 @@ loop do
 end
 
 prompt MESSAGES[:goodbye]
-
-# Tests
-
-=begin
-
-puts diagonals(3) == [
-  [[0, 0], [1, 1], [2, 2]],
-  [[0, 2], [1, 1], [2, 0]]
-]
-
-puts diagonals(4) == [
-  [[0, 0], [1, 1], [2, 2], [3, 3]],
-  [[0, 3], [1, 2], [2, 1], [3, 0]]
-]
-
-=end
