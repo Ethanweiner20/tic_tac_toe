@@ -34,9 +34,9 @@ the nested board array
 
 ## A Result is one of:
 - nil (game is unfinished)
-- 'X' (user win)
-- 'O' (computer win)
-- 'tie' (tie)
+- :user_won
+- :computer_won
+- :tie
 
 =end
 
@@ -85,7 +85,10 @@ end
 
 # Display
 
-def display_turn(board)
+def display_turn(board, score)
+  system('clear')
+  prompt score_message(score)
+  puts
   display_tutorial(board.size)
   display_board(board)
 end
@@ -109,8 +112,6 @@ def display_welcome_message
 end
 
 def display_tutorial(board_size)
-  system('clear')
-
   square_width = (board_size**2).to_s.length
   board = (1..board_size).map do |row|
     (1..board_size).map do |col|
@@ -129,9 +130,9 @@ end
 
 def result_message(result)
   case result
-  when USER then "You won!"
-  when COMPUTER then "You lost!"
-  when 'tie' then "You tied!"
+  when :user_won then "You won!"
+  when :computer_won then "You lost!"
+  when :tie then "You tied!"
   end
 end
 
@@ -146,19 +147,19 @@ end
 
 # Updates to the Board
 
-def move!(board, player)
+def move(board, player)
   case player
-  when USER then user_move!(board)
-  when COMPUTER then computer_move!(board)
+  when USER then user_move(board)
+  when COMPUTER then computer_move(board)
   end
 end
 
-def user_move!(board)
+def user_move(board)
   square = retrieve_square(board)
   update_board!(board, USER, square)
 end
 
-def computer_move!(board)
+def computer_move(board)
   choice = winning_square(board, COMPUTER) ||
            winning_square(board, USER) ||
            squares_left(board).find { |square| square == MIDDLE_SQUARE } ||
@@ -171,7 +172,8 @@ def winning_square(board, player)
   squares_left(board).find do |square|
     next_board = copy_board(board)
     update_board!(next_board, player, square)
-    result(next_board) == player
+    (player == USER && result(next_board) == :user_won) ||
+      (player == COMPUTER && result(next_board) == :computer_won)
   end
 end
 
@@ -182,9 +184,9 @@ end
 
 def result(board)
   winner = winner(board)
-  if winner == USER then USER
-  elsif winner == COMPUTER then COMPUTER
-  elsif full?(board) then 'tie'
+  if winner == USER then :user_won
+  elsif winner == COMPUTER then :computer_won
+  elsif full?(board) then :tie
   end
 end
 
@@ -253,9 +255,9 @@ def initialize_score
 end
 
 def update_score!(result, score)
-  if result == USER
+  if result == :user_won
     score[:user] += 1
-  elsif result == COMPUTER
+  elsif result == :computer_won
     score[:computer] += 1
   end
 end
@@ -263,17 +265,17 @@ end
 # Input Retrieval
 
 def retrieve_square(board)
-  square = nil
+  input = ''
 
   loop do
     valid_squares = squares_left(board)
     prompt "Enter a square number (#{joinor(valid_squares)}):"
-    square = gets.chomp.to_i
-    break if valid_squares.include?(square)
-    prompt "'#{square}' is either invalid or already taken."
+    input = gets.chomp
+    break if valid_integer?(input) && valid_squares.include?(input.to_i)
+    prompt "'#{input}' is either invalid or already taken."
   end
 
-  square
+  input.to_i
 end
 
 def retrieve_first_player
@@ -281,15 +283,15 @@ def retrieve_first_player
   answer = nil
   loop do
     puts MESSAGES[:pick_first_player]
-    answer = gets.chomp.to_i
-    break if [1, 2, 3].include?(answer)
+    answer = gets.chomp
+    break if %w(1 2 3).include?(answer)
     prompt MESSAGES[:invalid_choice]
   end
 
   case answer
-  when 1 then USER
-  when 2 then COMPUTER
-  when 3 then [USER, COMPUTER].sample
+  when '1' then USER
+  when '2' then COMPUTER
+  when '3' then [USER, COMPUTER].sample
   end
 end
 
@@ -297,16 +299,22 @@ def choose_board_size
   answer = nil
   loop do
     prompt MESSAGES[:board_size]
-    answer = gets.chomp.to_i
-    break if (2..10).to_a.include?(answer)
+    answer = gets.chomp
+    break if valid_integer?(answer) && (2..10).to_a.include?(answer.to_i)
     prompt MESSAGES[:invalid_choice]
   end
-  answer
+  answer.to_i
 end
 
 def play_again?
-  prompt MESSAGES[:again]
-  answer = gets.chomp.downcase
+  answer = ''
+  loop do
+    prompt MESSAGES[:again]
+    answer = gets.chomp.downcase
+    break if %w(y yes n no).include?(answer)
+    prompt MESSAGES[:invalid_choice]
+  end
+
   !!(answer == 'y' || answer == 'yes')
 end
 
@@ -349,6 +357,10 @@ def end_game?(score)
   !!(score[:user] == MAX_WINS || score[:computer] == MAX_WINS)
 end
 
+def valid_integer?(input)
+  input.to_i.to_s == input
+end
+
 # MAIN PROGRAM
 # ============================================================================
 
@@ -366,8 +378,8 @@ loop do
 
     # Move Loop
     loop do
-      display_turn(board)
-      move!(board, current_player)
+      display_turn(board, score)
+      move(board, current_player)
       result = result(board)
       break if result
 
@@ -375,7 +387,7 @@ loop do
     end
 
     update_score!(result, score)
-    display_turn(board)
+    display_turn(board, score)
     display_result(result, score)
 
     break if end_game?(score)

@@ -115,7 +115,9 @@ Outer-level algorithm:
 
 - Is it appropriate to define players as 'X' and 'O'? I felt like that was appropriate, because that was really the only information needed to distinguish between players.
 - I chose to use a nested array with positions to represent a board, as opposed to a hash with square numbers, because it felt immediately more intuitive. It helped to condense the board display process, but added an extra layer of conversion between user input (square numbers) and array positions (e.g. [1, 2]). This added some confusion because it meant I was dealing w/ 2 different ways to represent the same thing. Should I have chosen the hash to avoid this confusion altogether?
+  - A hash may have been a better choice. The thing about hashes is that they are more explicit than arrays (and especially nested arrays). They more clearly lay out the intention of a data structure, and you don't have to understand how the data structure really works to use it.
 - Is is overboard or bad practice to create a separate data type to define the result of the game?
+  - 
 - In my `winner` method (and `computer_move!` method), is it good practice to rely on the return value of || (or other Boolean operators)?
   - Should my solution have been:
   ```ruby
@@ -128,8 +130,12 @@ Outer-level algorithm:
     end
   ```
   - I assume that using || is an appropriate simplifcation.
+  - Yes. || can be an effective short-circuiting operation. Take advantage of it when you can.
 - Is it acceptable to rely on non-Boolean return values from a method to determine truthiness, or should is it better to only utilize the truthiness of methods that return a Boolean explicitly? For example, my `computer_move!` method relies on the truthiness of `winning_square`, which returns either a square (truthy) or `nil` (falsey).
+  - This is completely aceptable.
 - In order to experiment with board updates (without actually performing them), I went the route of making board copies (deep to the row level) via a helper method `copy_board`. Instead of needing to copy the board, I could've re-written methods that perform board updates to be nondestructive, and actually return a new, updated instance of the board. Would the latter (a more functional-programming style) be preferable?
+  - Mutating methods is ok -- just be aware when we are mutating a data structure
+  
 
 ## Improvements
 
